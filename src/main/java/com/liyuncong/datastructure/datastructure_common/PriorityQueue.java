@@ -2,7 +2,7 @@ package com.liyuncong.datastructure.datastructure_common;
 
 import java.lang.reflect.Array;
 
-import com.liyuncong.sort.sort_common.impl.HeapSort;
+import com.liyuncong.sort.sort_common.impl.HeapSortBasedOnMaxHeap;
 
 public class PriorityQueue<T extends Comparable<T>> {
 	private T[] heap;
@@ -10,7 +10,7 @@ public class PriorityQueue<T extends Comparable<T>> {
 	
 	public PriorityQueue(T[] a, int heapLength) {
 		super();
-		new HeapSort().buildMaxHeap(a, heapLength);
+		new HeapSortBasedOnMaxHeap().buildHeap(a, heapLength);
 		this.heap = a;
 		this.heapLength = heapLength;
 	}
@@ -26,7 +26,7 @@ public class PriorityQueue<T extends Comparable<T>> {
 		T max = heap[1];
 		heap[1] = heap[heapLength];
 		heapLength--;
-		new HeapSort().maxHeapify(this.heap, 1, heapLength);
+		new HeapSortBasedOnMaxHeap().heapify(this.heap, 1, heapLength);
 		return max;
 	}
 	
@@ -45,11 +45,11 @@ public class PriorityQueue<T extends Comparable<T>> {
 		 * 向上移动heap[i]的位置;
 		 * 移动的条件是heap[i]不是根节点，并且heap[i]比双亲结点大
 		 */
-		while(i > 1 && heap[i].compareTo(this.heap[new HeapSort().parent(i)]) > 0){
+		while(i > 1 && heap[i].compareTo(this.heap[new HeapSortBasedOnMaxHeap().parent(i)]) > 0){
 			T temp = this.heap[i];
-			this.heap[i] = this.heap[new HeapSort().parent(i)];
-			this.heap[new HeapSort().parent(i)] = temp;
-			i = new HeapSort().parent(i);
+			this.heap[i] = this.heap[new HeapSortBasedOnMaxHeap().parent(i)];
+			this.heap[new HeapSortBasedOnMaxHeap().parent(i)] = temp;
+			i = new HeapSortBasedOnMaxHeap().parent(i);
 		}
 	}
 	
