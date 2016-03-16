@@ -4,13 +4,14 @@ import java.lang.reflect.Array;
 
 import com.liyuncong.sort.sort_common.impl.HeapSortBasedOnMaxHeap;
 
-public class PriorityQueue<T extends Comparable<T>> {
+public class MaxPriorityQueue<T extends Comparable<T>> {
 	private T[] heap;
 	private int heapLength;
+	private HeapSortBasedOnMaxHeap<T> sortBasedOnMaxHeap = new HeapSortBasedOnMaxHeap<>();
 	
-	public PriorityQueue(T[] a, int heapLength) {
+	public MaxPriorityQueue(T[] a, int heapLength) {
 		super();
-		new HeapSortBasedOnMaxHeap().buildHeap(a, heapLength);
+		sortBasedOnMaxHeap.buildHeap(a, heapLength);
 		this.heap = a;
 		this.heapLength = heapLength;
 	}
@@ -23,10 +24,10 @@ public class PriorityQueue<T extends Comparable<T>> {
 		if (this.heapLength < 1) {
 			return null;
 		}
-		T max = heap[1];
-		heap[1] = heap[heapLength];
+		T max = heap[0];
+		heap[0] = heap[heapLength - 1];
 		heapLength--;
-		new HeapSortBasedOnMaxHeap().heapify(this.heap, 1, heapLength);
+		sortBasedOnMaxHeap.heapify(this.heap, 0, heapLength);
 		return max;
 	}
 	
@@ -45,11 +46,11 @@ public class PriorityQueue<T extends Comparable<T>> {
 		 * 向上移动heap[i]的位置;
 		 * 移动的条件是heap[i]不是根节点，并且heap[i]比双亲结点大
 		 */
-		while(i > 1 && heap[i].compareTo(this.heap[new HeapSortBasedOnMaxHeap().parent(i)]) > 0){
+		while(i > 1 && heap[i].compareTo(this.heap[sortBasedOnMaxHeap.parent(i)]) > 0){
 			T temp = this.heap[i];
-			this.heap[i] = this.heap[new HeapSortBasedOnMaxHeap().parent(i)];
-			this.heap[new HeapSortBasedOnMaxHeap().parent(i)] = temp;
-			i = new HeapSortBasedOnMaxHeap().parent(i);
+			this.heap[i] = this.heap[sortBasedOnMaxHeap.parent(i)];
+			this.heap[sortBasedOnMaxHeap.parent(i)] = temp;
+			i = sortBasedOnMaxHeap.parent(i);
 		}
 	}
 	
@@ -98,7 +99,7 @@ public class PriorityQueue<T extends Comparable<T>> {
 
 	public static void main(String[] args) {
 		Integer[] heap = new Integer[]{0, 3, 1, 5, 12, 7};
-		PriorityQueue<Integer> priorityQueue = new PriorityQueue<Integer>(heap, 5);
+		MaxPriorityQueue<Integer> priorityQueue = new MaxPriorityQueue<Integer>(heap, 5);
 		System.out.println(priorityQueue.heapMaximum());
 	    priorityQueue.printHeap();
 	    System.out.println(priorityQueue.getHeapLength());
