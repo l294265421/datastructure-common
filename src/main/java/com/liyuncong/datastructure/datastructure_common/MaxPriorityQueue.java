@@ -17,7 +17,7 @@ public class MaxPriorityQueue<T extends Comparable<T>> {
 	}
 	
 	public T heapMaximum() {
-		return this.heap[1];
+		return this.heap[0];
 	}
 	
 	public T heapExtractMax() {
@@ -36,7 +36,6 @@ public class MaxPriorityQueue<T extends Comparable<T>> {
 			try {
 				throw new Exception("the key is less than heap[i]");
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return;
 			}
@@ -46,7 +45,7 @@ public class MaxPriorityQueue<T extends Comparable<T>> {
 		 * 向上移动heap[i]的位置;
 		 * 移动的条件是heap[i]不是根节点，并且heap[i]比双亲结点大
 		 */
-		while(i > 1 && heap[i].compareTo(this.heap[sortBasedOnMaxHeap.parent(i)]) > 0){
+		while(i > 0 && heap[i].compareTo(this.heap[sortBasedOnMaxHeap.parent(i)]) > 0){
 			T temp = this.heap[i];
 			this.heap[i] = this.heap[sortBasedOnMaxHeap.parent(i)];
 			this.heap[sortBasedOnMaxHeap.parent(i)] = temp;
