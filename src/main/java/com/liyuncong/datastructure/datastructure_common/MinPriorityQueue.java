@@ -2,16 +2,17 @@ package com.liyuncong.datastructure.datastructure_common;
 
 import java.lang.reflect.Array;
 
-import com.liyuncong.sort.sort_common.impl.HeapSortBasedOnMinHeap;
+import com.liyuncong.sort.heap.MinHeap;
 
 public class MinPriorityQueue<T extends Comparable<T>> {
 	private T[] heap;
 	private int heapLength;
-	private HeapSortBasedOnMinHeap<T> sortBasedOnMinHeap = new HeapSortBasedOnMinHeap<>();
-	public MinPriorityQueue(T[] heap, int heapLength) {
+	// 用于提供堆的操作
+	private MinHeap<T> minHeap = new MinHeap<>();
+	public MinPriorityQueue(T[] a, int heapLength) {
 		super();
-		sortBasedOnMinHeap.buildHeap(heap, heapLength);
-		this.heap = heap;
+		minHeap.buildHeap(a, heapLength);
+		this.heap = a;
 		this.heapLength = heapLength;
 	}
 	
@@ -26,7 +27,7 @@ public class MinPriorityQueue<T extends Comparable<T>> {
 		T min = heap[0];
 		heap[0] = heap[heapLength - 1];
 		heapLength--;
-		sortBasedOnMinHeap.heapify(this.heap, 0, heapLength);
+		minHeap.heapify(this.heap, 0, heapLength);
 		return min;
 	}
 	
@@ -44,16 +45,15 @@ public class MinPriorityQueue<T extends Comparable<T>> {
 		 * 向上移动heap[i]的位置;
 		 * 移动的条件是heap[i]不是根节点，并且heap[i]比双亲结点大
 		 */
-		while(i > 0 && heap[i].compareTo(this.heap[sortBasedOnMinHeap.parent(i)]) < 0){
+		while(i > 0 && heap[i].compareTo(this.heap[minHeap.parent(i)]) < 0){
 			T temp = this.heap[i];
-			this.heap[i] = this.heap[sortBasedOnMinHeap.parent(i)];
-			this.heap[sortBasedOnMinHeap.parent(i)] = temp;
-			i = sortBasedOnMinHeap.parent(i);
+			this.heap[i] = this.heap[minHeap.parent(i)];
+			this.heap[minHeap.parent(i)] = temp;
+			i = minHeap.parent(i);
 		}
 	}
 	
 	public void minHeapInsert(T key) {
-		this.heapLength++;
 		// 如果保存堆的数组已经被填满
 		if (this.heapLength == this.heap.length) {
 			// 新建一个更大的数组，用于保存旧数组中的元素
@@ -69,6 +69,7 @@ public class MinPriorityQueue<T extends Comparable<T>> {
 		}
 		this.heap[heapLength] = key;
 		this.heapDecreaseKey(heapLength, key);
+		this.heapLength++;
 	}
 	
 	

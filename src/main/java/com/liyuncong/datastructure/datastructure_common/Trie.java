@@ -117,38 +117,4 @@ public class Trie {
 		}
 	}
 
-	public void show() {
-		show(ROOT_NODE, "");
-	}
-
-	private void show(TrieNode node, String indent) {
-		if (node.isTerminal()) {
-			System.out.println(indent + node.getCharacter() + "(T)");
-		} else {
-			System.out.println(indent + node.getCharacter());
-		}
-		for (TrieNode item : node.getChildren()) {
-			show(item, indent + "\t");
-		}
-	}
-
-	public static void main(String[] args) {
-		Trie trie = new Trie();
-		trie.add("APDPlat");
-		trie.add("APP");
-		trie.add("APD");
-		trie.add("Nutch");
-		trie.add("Lucene");
-		trie.add("Hadoop");
-		trie.add("Solr");
-		trie.add("杨尚川");
-		trie.add("杨尚昆");
-		trie.add("杨尚喜");
-		trie.add("中华人民共和国");
-		trie.add("中华人民打太极");
-		trie.add("中华");
-		trie.add("中心思想");
-		trie.add("杨家将");
-		trie.show();
-	}
 }
