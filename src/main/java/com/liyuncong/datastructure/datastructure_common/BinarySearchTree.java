@@ -1,7 +1,16 @@
-package com.liyuncong.datastructure.datastructure_common.binarysearchtree;
+package com.liyuncong.datastructure.datastructure_common;
 
+/**
+ * 二叉查找树
+ * @author yuncong
+ *
+ * @param <T>
+ */
 public class BinarySearchTree<T extends Comparable<T>> {
 	private TreeNode<T> root;
+	
+	public BinarySearchTree() {
+	}
 
 	public BinarySearchTree(T root) {
 		super();
@@ -67,8 +76,8 @@ public class BinarySearchTree<T extends Comparable<T>> {
 	
 	private TreeNode<T> innerTreeMaximum(TreeNode<T> target) {
 		TreeNode<T> cursor = target;
-		while (cursor != root && cursor.getRight() != null) {
-			cursor = root.getRight();
+		while (cursor != null && cursor.getRight() != null) {
+			cursor = cursor.getRight();
 		}
 		return cursor;
 	}
@@ -93,6 +102,73 @@ public class BinarySearchTree<T extends Comparable<T>> {
 			cursor = cursor.getParent();
 		}
 		return cursor;
+	}
+	
+	/**
+	 * 向二叉查找树中插入节点
+	 * @param node
+	 */
+	public void treeInsert(TreeNode<T> node) {
+		TreeNode<T> candidateParent = null;
+		TreeNode<T> cursor = root;
+		while (cursor != null) {
+			candidateParent = cursor;
+			if (node.getKey().compareTo(cursor.getKey()) < 0) {
+				cursor = cursor.getLeft();
+			} else {
+				cursor = cursor.getRight();
+			}
+		}
+		node.setParent(candidateParent);
+		if (candidateParent == null) {
+			root = node;
+		} else if(node.getKey().compareTo(candidateParent.getKey()) < 0){
+			candidateParent.setLeft(node);
+		} else {
+			candidateParent.setRight(node);
+		}
+	}
+	
+	/**
+	 * 从二叉查找树中删除节点
+	 * @param node
+	 */
+	public void treeDelete(TreeNode<T> node) {
+		if (node == null) {
+			return;
+		}
+		
+		TreeNode<T> realDeleteNode = null;
+		// 确定待删除元素
+		if (node.getLeft() == null || node.getRight() == null) {
+			realDeleteNode = node;
+		} else {
+			realDeleteNode = treeSuccessor(node);
+		}
+		
+		// 确定待删除元素的非null孩子
+		TreeNode<T> notNullChildOfRealDeleteNode = null;
+		if (realDeleteNode.getLeft() != null) {
+			notNullChildOfRealDeleteNode = realDeleteNode.getLeft();
+		} else {
+			notNullChildOfRealDeleteNode = realDeleteNode.getRight();
+		}
+		
+		if (notNullChildOfRealDeleteNode != null) {
+			notNullChildOfRealDeleteNode.setParent(realDeleteNode.getParent());
+		}
+		
+		if (realDeleteNode.getParent() == null) {
+			root = notNullChildOfRealDeleteNode;
+		} else if (realDeleteNode == realDeleteNode.getParent().getLeft()) {
+			realDeleteNode.getParent().setLeft(notNullChildOfRealDeleteNode);
+		} else {
+			realDeleteNode.getParent().setRight(notNullChildOfRealDeleteNode);
+		}
+		
+		if (realDeleteNode != node) {
+			node.setKey(realDeleteNode.getKey());
+		}
 	}
 
 	/**
@@ -144,5 +220,12 @@ public class BinarySearchTree<T extends Comparable<T>> {
 			this.right = right;
 		}
 
+		@Override
+		public String toString() {
+			return "TreeNode [key=" + key + ", parent=" + parent + ", left="
+					+ left + ", right=" + right + "]";
+		}
+
 	}
+	
 }
