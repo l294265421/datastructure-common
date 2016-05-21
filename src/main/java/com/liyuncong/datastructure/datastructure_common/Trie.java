@@ -1,6 +1,11 @@
 package com.liyuncong.datastructure.datastructure_common;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,12 +69,94 @@ public class Trie {
 		// 设置终结字符，表示从根节点遍历到此是一个合法的词
 		node.setTerminal(true);
 	}
+	
+	/**
+	 * 获得前缀为suffix的所有词。
+	 * @param suffix 前缀
+	 * @return
+	 */
+	public List<String> getWordsBySuffix(String suffix) {
+		List<String> words = new LinkedList<String>();
+		suffix = suffix.trim();
+		int len = suffix.length();
+		if (len < 1) {
+			return words;
+		}
+		
+		TrieNode cursor = ROOT_NODE;
+		// 找到最后一个字符对应的节点
+		for (int i = 0; i < len; i++) {
+			char character = suffix.charAt(i);
+			TrieNode child = cursor.getChild(character);
+			if (child == null) {
+				// 未找到匹配节点
+				return words;
+			} else {
+				// 找到节点，继续往下找
+				cursor = child;
+			}
+		}
+		
+		if (cursor.isTerminal()) {
+			words.add(suffix);
+		}
+		
+		for(TrieNode child : cursor.getChildren()) {
+			words.addAll(LevelTraverse(child, suffix));
+		}
+		
+		return words;
+	}
+	
+	/**
+	 * 层次遍历树，获得前缀suffix与前缀树node组合成的所有单词
+	 * @param node 子树根节点
+	 * @param suffix 整棵树的前缀，包括根节点
+	 * @return
+	 */
+	private List<String> LevelTraverse(TrieNode node, String suffix) {
+		List<String> words = new LinkedList<String>();
+		LinkedList<TrieNode> queue = new LinkedList<Trie.TrieNode>();
+		// 与queue对应，存储的是queue中非哨兵结点的对应的前缀
+		LinkedList<String> suffixQueue = new LinkedList<String>();
+		queue.add(node);
+		suffixQueue.addLast(suffix);
+		queue.add(TrieNode.FLAG_NODE);
+		while (!queue.isEmpty()) {
+			TrieNode temp = queue.poll();
+			
+			// 上一层元素已遍历完
+			if (temp == TrieNode.FLAG_NODE) {
+				if (!queue.isEmpty()) {
+					queue.add(TrieNode.FLAG_NODE);
+				}
+				continue;
+			}
+			suffix = suffixQueue.poll();
+			
+			if (temp.isTerminal()) {
+				words.add(suffix + temp.character);
+			}
+			
+			Collection<TrieNode> children = temp.getChildren();
+			for (TrieNode child : children) {
+				queue.add(child);
+				suffixQueue.addLast(suffix + temp.getCharacter());
+			}
+		}
+		return words;
+	}
 
 	private static class TrieNode {
 		private char character;
 		private boolean terminal;
 		private final Map<Character, TrieNode> children = new 
 				ConcurrentHashMap<>();
+		
+		public static final TrieNode FLAG_NODE = new TrieNode();
+		
+		public TrieNode() {
+		}
 
 		public TrieNode(char character) {
 			this.character = character;
@@ -115,6 +202,13 @@ public class Trie {
 		public void removeChild(TrieNode child) {
 			this.children.remove(child.getCharacter());
 		}
+
+		@Override
+		public String toString() {
+			return "TrieNode [character=" + character + ", terminal="
+					+ terminal + ", children=" + children + "]";
+		}
+		
 	}
 
 }
