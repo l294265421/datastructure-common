@@ -93,7 +93,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
 		}
 		
 		if (target.getRight() != null) {
-			return innerTreeMaximum(target.getRight());
+			return innerTreeMinimum(target.getRight());
 		}
 		
 		TreeNode<T> cursor = target.getParent();

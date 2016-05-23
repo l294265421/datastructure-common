@@ -1,6 +1,5 @@
 package com.liyuncong.datastructure.datastructure_common;
 
-
 public class RBTree<T extends Comparable<T>> {
 	private TreeNode<T> root;
 	
@@ -10,6 +9,48 @@ public class RBTree<T extends Comparable<T>> {
 	public RBTree(TreeNode<T> root) {
 		super();
 		this.root = root;
+	}
+	
+	/**
+	 * 获得这颗红黑树中关键字最小的节点
+	 * @return
+	 */
+	public TreeNode<T> treeMinimum() {
+		return innerTreeMinimum(root);
+	}
+	
+	private TreeNode<T> innerTreeMinimum(TreeNode<T> target) {
+		if (target == null || target == TreeNode.SENTINEL) {
+			return null;
+		}
+		
+		TreeNode<T> cursor = target;
+		while (cursor.getLeft() != TreeNode.SENTINEL) {
+			cursor = cursor.getLeft();
+		}
+		return cursor;
+	}
+	
+	/**
+	 * 获得target节点在树中的后继（中根遍历）
+	 * @param target
+	 * @return
+	 */
+	public TreeNode<T> treeSuccessor(TreeNode<T> target) {
+		if (target == null || target == TreeNode.SENTINEL) {
+			return null;
+		}
+		
+		if (target.getRight() != TreeNode.SENTINEL) {
+			return innerTreeMinimum(target.getRight());
+		}
+		
+		TreeNode<T> cursor = target.getParent();
+		while (cursor != TreeNode.SENTINEL && target == cursor.getRight()) {
+			target = cursor;
+			cursor = cursor.getParent();
+		}
+		return cursor;
 	}
 
 	/**
@@ -144,6 +185,115 @@ public class RBTree<T extends Comparable<T>> {
 			}
 		}
 		root.setColor(Color.BLACK);
+	}
+	
+	public void rbDelete(TreeNode<T> target) {
+		if (target == null || target == TreeNode.SENTINEL) {
+			return;
+		}
+		
+		// 确定要删除的元素
+		TreeNode<T> realDeleteNode = null;
+		if (target.getLeft() == TreeNode.SENTINEL || 
+				target.getRight() == TreeNode.SENTINEL) {
+			realDeleteNode = target;
+		} else {
+			realDeleteNode = treeSuccessor(target);
+		}
+		
+		// 确定待删除元素的非null孩子
+		TreeNode<T> notNullChildOfRealDeleteNode = null;
+		if (realDeleteNode.getLeft() != TreeNode.SENTINEL) {
+			notNullChildOfRealDeleteNode = realDeleteNode.getLeft();
+		} else {
+			notNullChildOfRealDeleteNode = realDeleteNode.getRight();
+		}
+		notNullChildOfRealDeleteNode.setParent(realDeleteNode.getParent());
+		
+		if (realDeleteNode.getParent() == TreeNode.SENTINEL) {
+			root = notNullChildOfRealDeleteNode;
+		} else if(realDeleteNode == realDeleteNode.getParent().getLeft()){
+			realDeleteNode.getParent().setLeft(notNullChildOfRealDeleteNode);
+		} else {
+			realDeleteNode.getParent().setRight(notNullChildOfRealDeleteNode);
+		}
+		
+		if (realDeleteNode != target) {
+			target.setKey(realDeleteNode.getKey());
+		}
+		
+		if (realDeleteNode.getColor() == Color.BLACK) {
+			rbDeleteFixup(notNullChildOfRealDeleteNode);
+		}
+	}
+	
+	public void rbDeleteFixup(TreeNode<T> target) {
+		while (target != root && target.getColor() == Color.BLACK) {
+			if (target == target.getParent().getLeft()) {
+				TreeNode<T> brother = target.getParent().getRight();
+				
+				// 情况一
+				if (brother.getColor() == Color.RED) {
+					brother.setColor(Color.BLACK);
+					target.getParent().setColor(Color.RED);
+					leftRotate(target.getParent());
+					brother = target.getParent().getRight();
+				}
+				// 情况二
+				if (brother.getLeft().getColor() == Color.BLACK && 
+						brother.getRight().getColor() == Color.RED) {
+					brother.setColor(Color.RED);
+					target = target.getParent();
+				} else {
+					// 情况三
+					if (brother.getParent().getRight().getColor() == 
+							Color.BLACK) {
+						brother.getLeft().setColor(Color.BLACK);
+						brother.setColor(Color.RED);
+						rightRotate(brother);
+						brother = target.getParent().getRight();
+					}
+					// 情况四
+					brother.setColor(target.getParent().getColor());
+					target.getParent().setColor(Color.BLACK);
+					brother.getRight().setColor(Color.BLACK);
+					leftRotate(target.getParent());
+					target = root;
+				}
+				
+			} else {
+				TreeNode<T> brother = target.getParent().getLeft();
+				
+				// 情况一
+				if (brother.getColor() == Color.RED) {
+					brother.setColor(Color.BLACK);
+					target.getParent().setColor(Color.RED);
+					rightRotate(target.getParent());
+					brother = target.getParent().getLeft();
+				}
+				// 情况二
+				if (brother.getRight().getColor() == Color.BLACK && 
+						brother.getLeft().getColor() == Color.RED) {
+					brother.setColor(Color.RED);
+					target = target.getParent();
+				} else {
+					// 情况三
+					if (brother.getParent().getLeft().getColor() == 
+							Color.BLACK) {
+						brother.getRight().setColor(Color.BLACK);
+						brother.setColor(Color.RED);
+						leftRotate(brother);
+						brother = target.getParent().getLeft();
+					}
+					// 情况四
+					brother.setColor(target.getParent().getColor());
+					target.getParent().setColor(Color.BLACK);
+					brother.getLeft().setColor(Color.BLACK);
+					rightRotate(target.getParent());
+					target = root;
+				}
+			}
+		}
 	}
 	
 	/**
